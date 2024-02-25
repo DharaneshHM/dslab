@@ -1,0 +1,1 @@
+ git add filename.txt : command is used to stage changes made to the specified file named filename.txt for the next commit in your Git repository.
