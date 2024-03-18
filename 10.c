@@ -1,113 +1,121 @@
 #include<stdio.h>
+#include<conio.h>
 #include<stdlib.h>
-#include<math.h>
-struct node     
+int choice,data,key;
+struct node
 {
-int coef, px, py, pz,flag;
-struct node *link;
+int info;
+struct node *lchild,*rchild;
 };
-typedef struct node * NODE;
-NODE create_list(NODE head) 
+typedef struct node *NODE;
+int main()
 {
-int i,n,cf,px,py,pz;
-printf("Enter the number of terms : ");
-  scanf("%d",&n);54
-for(i=1;i<=n;i++)
+NODE root=NULL;
+NODE CREATE(NODE,int);
+void INORDER(NODE),POSTORDER(NODE),PREORDER(NODE);
+  NODE SEARCH_NODE(NODE,int);
+while(1)
 {
-printf("Enter the Co-ef, px, py, pz : ");
-scanf("%d %d %d %d",&cf,&px,&py,&pz);
-insert(head,cf,px,py,pz);
+printf("\n1:CREATE\n2:TREE TRAVERSAL\n3.SEARCH\n4.EXIT");
+  printf("\nEnter your choice\n");
+scanf("%d",&choice);
+switch(choice)
+{
+case 1: printf("\nEnter data to be inserted\n"); scanf("%d",&data);
+root=CREATE(root,data); break;
+case 2: if(root==NULL) printf("\nEMPTY TREE\n");
+else
+{
+printf("\nThe Inorder display : ");
+  INORDER(root);
+printf("\nThe Preorder display : "); 
+  PREORDER(root);
+printf("\nThe Postorder display : ");
+  POSTORDER(root);
 }
-return head;
-}/*End of create_list()*/
-insert(NODE head,int cof,int x,int y, int z) //inserting term to poly
-{
-NODE cur,tmp;
-tmp= (NODE)malloc(sizeof(struct node)); 
-  int cf,px,py,pz; cur=head->link;
-tmp->coef=cof;
-tmp->px=x;
-tmp->py=y;
-tmp->pz=z;
-tmp->flag=0;
-while(cur->link!=head) 
-cur=cur->link;
-cur->link=tmp;
-tmp->link=head;
-}
-NODE add_poly(NODE h1,NODE h2,NODE h3)
-{
-NODE cur1,cur2,scf; 
-  cur1=h1->link;
-  cur2=h2->link;
-while(cur1 != h1) 
-if(cur2 == h2)
-cur2=h2->link;
-while(cur2 != h2) 
-{
-if(cur1->px == cur2->px && cur1->py == cur2->py && cur1->pz == cur2->pz) 
-{          
-scf = cur1->coef + cur2->coef;
-  insert(h3,scf,cur1->px,cur1->py,cur1->pz);
-  cur2->flag=1;55
-cur2=h2->link;
-  break;
-}
-cur2=cur2->link;
-}
-if(cur1 == h1)
 break;
-if(cur2 == h2)  
-  insert(h3,cur1->coef,cur1->px,cur1->py,cur1->pz);
-cur1=cur1->link;
+case 3: printf("\nenter the key to search:\n"); 
+  scanf("%d",&key);
+SEARCH_NODE(root,key);
+break;
+case 4:  exit(0);
 }
-cur2=h2->link;
-while(cur2 != h2) 
+}
+}
+NODE CREATE(NODE root,int data)
 {
-if(cur2->flag==0)
-insert(h3,cur2->coef,cur2->px,cur2->py,cur2->pz);
-cur2=cur2->link;
-}
-return h3;
-}
-void display(NODE head)
+NODE newnode,x,parent; newnode=(NODE)malloc(sizeof(struct node));
+  newnode->lchild=newnode->rchild=NULL; 
+  newnode->info=data;
+if(root==NULL)
+root=newnode;
+else
 {
-NODE cur;
-if(head->link==head) //if poly is empty
+x=root;
+while(x!=NULL)
 {
-printf("List is empty\n"); return;
-}
-cur=head->link;
-while(cur != head) //display all terms till end
+parent=x;
+if(x->info<data)
+x=x->rchild;
+else if(x->info>data)
+x=x->lchild;
+else
 {
-if(cur->coef > 0)
-printf(" +%dx^%dy^%dz^%d ",cur->coef,cur->px,cur->py,cur->pz); 
-else if (cur->coef < 0)
-printf(" %dx^%dy^%dz^%d ",cur->coef,cur->px,cur->py,cur->pz); 
-  cur=cur->link;
+printf("\nNode is already present in the tree\n");
+  return(root);
+}60
 }
-printf("\n");
+if(parent->info<data)
+parent->rchild=newnode;
+else
+parent->lchild=newnode;
 }
-void main()
+return(root);
+}
+void INORDER(NODE root)
 {
-int choice,data,item,pos; NODE head1,head2,head3; head1=(NODE)malloc(sizeof(struct node));
-head1->link=head1;
-//poly1
-head2=(NODE)malloc(sizeof(struct node));
-head2->link=head2;
-//poly2
-head3=(NODE)malloc(sizeof(struct node));
-//poly3
-head3->link=head3;
-printf("\n1.Create Polynomial 1\n"); 
-  head1=create_list(head1);
-printf("\n2.Create Polynomial 2\n");
-  head2=create_list(head2);
-printf("\nPolynomial 1 is :");
-  display(head1);
-printf("\nPolynomial 2 is :"); 
-  display(head2);
-head3=add_poly(head1,head2,head3);
-printf("\nAddition of two Polynomial is :");
-  display(head3);
+if(root!=NULL)
+{
+INORDER(root->lchild);
+printf("%d  ",root->info);
+INORDER(root->rchild);
+}
+}
+void PREORDER(NODE root)
+{
+if(root!=NULL)
+{
+printf("%d ",root->info);
+PREORDER(root->lchild);
+PREORDER(root->rchild);
+}
+}
+void POSTORDER(NODE root)
+{
+if(root!=NULL)
+{
+POSTORDER(root->lchild); 
+  POSTORDER(root->rchild);
+printf("%d ",root->info);
+}
+}
+NODE SEARCH_NODE(NODE root, int key) {
+NODE cur,q,parent,successor;
+if(root==NULL)
+{
+printf("\nTree is empty\n");
+return root;
+}
+parent=NULL,cur=root;
+while(cur!=NULL)
+{
+if(key==cur->info)
+break;
+parent=cur;
+cur= (key<cur->info)?cur->lchild:cur->rchild; }
+if(cur==NULL)
+{
+printf("\nData is not found\n"); return root;
+}
+printf("\nData %d is found\n",key);
 }
